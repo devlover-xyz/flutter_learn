@@ -9,10 +9,10 @@ class DividerPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Divider Example'),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Text('Above Divider'), // Text widget above the first Divider
 
             Divider(), // Creates a horizontal line
