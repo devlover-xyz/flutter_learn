@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/models/person.dart';
+import 'package:myapp/services/localservice.dart';
+import 'package:myapp/services/onlineservice.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -11,50 +12,72 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Profile'),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const CircleAvatar(
-                radius: 80,
-                backgroundImage:
-                    NetworkImage('https://picsum.photos/250?image=9'),
-                // backgroundImage: AssetImage('assets/images/profile.jpeg'), // Replace with your image path
-              ),
-              const SizedBox(height: 20),
-              Image.asset(
-                'assets/images/profile.jpeg',
-                width: 150,
-                height: 150,
-              ),
-              const SizedBox(height: 20),
-              CachedNetworkImage(
-                imageUrl: 'https://picsum.photos/250?image=9',
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'John Doe',
-                // style: TextStyle(
-                //   fontFamily: 'Roboto',
-                //   fontSize: 24,
-                //   fontWeight: FontWeight.bold,
-                //   fontStyle: FontStyle.italic,
-                // ),
-                style: GoogleFonts.lato(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
+      body: FutureBuilder(
+        // future: LocalService().loadPerson(),
+        future: OnlineService().loadPerson(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            Person person = snapshot.data as Person;
+
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  child: Card(
+                    elevation: 4.0,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          CircleAvatar(
+                            backgroundImage: NetworkImage(person.image!),
+                            radius: 50.0,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            person.name!,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            person.address!,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Age: ${person.age}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            person.description!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text('Software Engineer'),
-              const SizedBox(height: 20), // Add spacing at the bottom
-            ],
-          ),
-        ),
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
